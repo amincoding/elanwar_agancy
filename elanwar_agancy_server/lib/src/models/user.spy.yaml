@@ -1,0 +1,10 @@
+class: User
+table: user
+
+fields:
+    userInfo: module:auth:UserInfo? , relation
+    fullName: String? 
+    role: String?
+    contactInfo: String?
+    adress: String?
+    createdAt: String? 

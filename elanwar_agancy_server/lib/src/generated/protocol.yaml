@@ -1,5 +1,13 @@
 example:
   - hello:
+reservation:
+  - getAll:
+  - getByUserId:
+  - getByName:
+  - getByRoomNumber:
+  - getByTotalPrice:
+  - getIsExpired:
+  - create:
 user:
   - get:
   - create:

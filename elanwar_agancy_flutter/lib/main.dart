@@ -8,7 +8,7 @@ void main() async {
   await intiSingeltons();
   runApp(
     const ProviderScope(
-      child: MyApp(),
+      child: SafeArea(child: MyApp()),
     ),
   );
 }

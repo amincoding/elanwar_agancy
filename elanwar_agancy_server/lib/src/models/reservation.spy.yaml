@@ -1,0 +1,14 @@
+class: Reservation
+table: reservation
+
+fields:
+    user: User?, relation
+    fullName: String
+    hotel: String
+    room: int
+    totalPrice: double
+    payed: double?
+    debt: double?  
+    startDate: DateTime 
+    endDate: DateTime
+    isExpired: bool

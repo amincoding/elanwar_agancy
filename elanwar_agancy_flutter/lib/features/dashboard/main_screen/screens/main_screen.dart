@@ -5,6 +5,7 @@ import 'package:elanwar_agancy_flutter/core/providers/session_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/add_reservation_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/get_all_reservations_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen.dart';
+import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen_android.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,20 +34,20 @@ class MainScreen extends ConsumerWidget {
         ),
         centerTitle: true,
         actions: [
-          Platform.isAndroid
-              ? Text("")
-              : TextButton(
-                  onPressed: () {
-                    ref.refresh(getAllReservationsProvider);
-                  },
-                  child: const Text(
-                    "Refresh",
-                    style: TextStyle(color: Colors.black),
-                  )),
+          TextButton(
+              onPressed: () {
+                ref.refresh(getAllReservationsProvider);
+              },
+              child: const Text(
+                "Refresh",
+                style: TextStyle(color: Colors.black),
+              )),
         ],
       ),
       drawer: _buildDrawer(context, ref),
-      body: ReservationsScreen(),
+      body: Platform.isAndroid
+          ? const ReservatoinsScreenAndroid()
+          : const ReservationsScreen(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: () {
@@ -385,7 +386,9 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                                       : 'اختر تاريخ البدء',
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.001),
                               ElevatedButton(
                                 onPressed: () => _pickTime(context, true),
                                 child: Text(
@@ -411,7 +414,9 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                                       : 'اختر تاريخ النهاية',
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.001),
                               ElevatedButton(
                                 onPressed: () => _pickTime(context, false),
                                 child: Text(

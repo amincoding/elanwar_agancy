@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:elanwar_agancy_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
@@ -35,6 +37,23 @@ class ReservationEndpoint extends Endpoint {
       session,
       where: (row) => row.totalPrice.equals(price),
     );
+  }
+
+  Future<Reservation?> getMaxPrice(Session session) async {
+    // Get all reservations
+    final List<Reservation> reservations = await Reservation.db.find(session);
+
+    // Find the reservation with the maximum totalPrice
+    if (reservations.isEmpty) return null;
+
+    Reservation maxReservation = reservations[0];
+    for (var reservation in reservations) {
+      if (reservation.totalPrice > maxReservation.totalPrice) {
+        maxReservation = reservation;
+      }
+    }
+
+    return maxReservation;
   }
 
   Future<Reservation?> getIsExpired(Session session, bool isExpired) async {

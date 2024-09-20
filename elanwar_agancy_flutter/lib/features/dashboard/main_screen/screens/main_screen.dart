@@ -112,17 +112,19 @@ class MainScreen extends ConsumerWidget {
           ),
 
           // ListTile for adding a new customer
-          const ListTile(
-            leading: const Icon(Icons.hotel, color: Colors.blue),
+          ListTile(
+            leading: const Icon(Icons.bar_chart_rounded, color: Colors.blue),
             title: const Text(
               textDirection: TextDirection.rtl,
-              'إضافة فندق',
+              'الإحصائيات',
               style: TextStyle(
                 fontFamily: "Aref",
                 fontSize: 22,
               ),
             ),
-            onTap: null,
+            onTap: () {
+              context.push("/stats");
+            },
           ),
           const ListTile(
             leading: Icon(Icons.add, color: Colors.blue),

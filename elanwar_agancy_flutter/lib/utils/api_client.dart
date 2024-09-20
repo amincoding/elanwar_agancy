@@ -17,7 +17,7 @@ class ApiClientImplementation extends ApiClient {
   Future<void> init() async {
     client = Client(
       Platform.isAndroid
-          ? 'http://192.168.1.33:8080/'
+          ? 'http://192.168.1.40:8080/'
           : 'http://$localhost:8080/',
       authenticationKeyManager: FlutterAuthenticationKeyManager(),
     )..connectivityMonitor = FlutterConnectivityMonitor();

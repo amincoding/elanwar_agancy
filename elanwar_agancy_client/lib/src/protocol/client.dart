@@ -72,6 +72,13 @@ class EndpointReservation extends _i1.EndpointRef {
         {'price': price},
       );
 
+  _i2.Future<_i3.Reservation?> getMaxPrice() =>
+      caller.callServerEndpoint<_i3.Reservation?>(
+        'reservation',
+        'getMaxPrice',
+        {},
+      );
+
   _i2.Future<_i3.Reservation?> getIsExpired(bool isExpired) =>
       caller.callServerEndpoint<_i3.Reservation?>(
         'reservation',

@@ -151,6 +151,16 @@ class Endpoints extends _i1.EndpointDispatch {
             params['price'],
           ),
         ),
+        'getMaxPrice': _i1.MethodConnector(
+          name: 'getMaxPrice',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['reservation'] as _i3.ReservationEndpoint)
+                  .getMaxPrice(session),
+        ),
         'getIsExpired': _i1.MethodConnector(
           name: 'getIsExpired',
           params: {

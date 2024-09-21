@@ -56,6 +56,64 @@ class ReservationEndpoint extends Endpoint {
     return maxReservation;
   }
 
+  Future<double?> getTotalPrices(Session session) async {
+    // Get all reservations
+    final List<Reservation> reservations = await Reservation.db.find(session);
+
+    // Find the reservation with the maximum totalPrice
+    if (reservations.isEmpty) return null;
+
+    double totalPrices = 0;
+    for (var reservation in reservations) {
+      totalPrices += reservation.totalPrice;
+    }
+
+    return totalPrices;
+  }
+
+  Future<double?> getTotalDebts(Session session) async {
+    // Get all reservations
+    final List<Reservation> reservations = await Reservation.db.find(session);
+
+    // Find the reservation with the maximum totalPrice
+    if (reservations.isEmpty) return null;
+
+    double totalDebts = 0;
+    for (var reservation in reservations) {
+      if (reservation.debt == null) {
+        totalDebts += 0;
+      }
+      totalDebts += reservation.debt!;
+    }
+
+    return totalDebts;
+  }
+
+  Future<Map<int, double>> getTotalPricesPerMonth(Session session) async {
+    // Get all reservations
+    final List<Reservation> reservations = await Reservation.db.find(session);
+
+    // Create a map to hold the total prices for each month
+    Map<int, double> totalPricesPerMonth = {};
+
+    // Iterate through each reservation
+    for (var reservation in reservations) {
+      // Get the month from the reservation's createdDate
+      int month = reservation.createAt.month;
+
+      // Add the totalPrice to the corresponding month
+      if (totalPricesPerMonth.containsKey(month)) {
+        totalPricesPerMonth[month] =
+            totalPricesPerMonth[month]! + reservation.totalPrice;
+      } else {
+        totalPricesPerMonth[month] = reservation.totalPrice;
+      }
+    }
+
+    // Return the map with the total prices for each month
+    return totalPricesPerMonth;
+  }
+
   Future<Reservation?> getIsExpired(Session session, bool isExpired) async {
     return Reservation.db.findFirstRow(
       session,

@@ -6,6 +6,7 @@ import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/
 import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/get_all_reservations_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen_android.dart';
+import 'package:elanwar_agancy_flutter/features/stats/providers/max_price_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,6 +61,7 @@ class MainScreen extends ConsumerWidget {
 
   // Drawer widget function
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    final maxPrice = ref.watch(maxPriceProvider);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -112,20 +114,34 @@ class MainScreen extends ConsumerWidget {
           ),
 
           // ListTile for adding a new customer
-          ListTile(
-            leading: const Icon(Icons.bar_chart_rounded, color: Colors.blue),
-            title: const Text(
-              textDirection: TextDirection.rtl,
-              'الإحصائيات',
-              style: TextStyle(
-                fontFamily: "Aref",
-                fontSize: 22,
-              ),
-            ),
-            onTap: () {
-              context.push("/stats");
-            },
-          ),
+          maxPrice == null
+              ? const ListTile(
+                  leading: Icon(Icons.bar_chart_rounded, color: Colors.blue),
+                  title: Text(
+                    textDirection: TextDirection.rtl,
+                    'الإحصائيات',
+                    style: TextStyle(
+                      fontFamily: "Aref",
+                      fontSize: 22,
+                    ),
+                  ),
+                  onTap: null,
+                )
+              : ListTile(
+                  leading:
+                      const Icon(Icons.bar_chart_rounded, color: Colors.blue),
+                  title: const Text(
+                    textDirection: TextDirection.rtl,
+                    'الإحصائيات',
+                    style: TextStyle(
+                      fontFamily: "Aref",
+                      fontSize: 22,
+                    ),
+                  ),
+                  onTap: () {
+                    context.pop();
+                    context.push("/stats");
+                  }),
           const ListTile(
             leading: Icon(Icons.add, color: Colors.blue),
             title: Text(
@@ -458,18 +474,24 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                         selectedEndTime!.hour,
                         selectedEndTime!.minute,
                       );
-                      ref.read(addReservationProvider(Reservation(
-                          userId: user!,
-                          fullName: fullNameController.text,
-                          hotel: hotelNameController.text,
-                          room: int.parse(roomNumberController.text),
-                          totalPrice: double.parse(totalPriceController.text),
-                          startDate: startTime,
-                          endDate: endTime,
-                          payed: double.parse(payedController.text),
-                          debt: double.parse(totalPriceController.text) -
-                              double.parse(payedController.text),
-                          isExpired: false)));
+                      ref.read(
+                        addReservationProvider(
+                          Reservation(
+                            userId: user!,
+                            fullName: fullNameController.text,
+                            hotel: hotelNameController.text,
+                            room: int.parse(roomNumberController.text),
+                            totalPrice: double.parse(totalPriceController.text),
+                            startDate: startTime,
+                            endDate: endTime,
+                            payed: double.parse(payedController.text),
+                            debt: double.parse(totalPriceController.text) -
+                                double.parse(payedController.text),
+                            isExpired: false,
+                            createAt: DateTime.now(),
+                          ),
+                        ),
+                      );
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(

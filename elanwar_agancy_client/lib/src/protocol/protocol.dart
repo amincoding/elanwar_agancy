@@ -57,6 +57,11 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i5.Reservation?>(e))
           .toList() as dynamic;
     }
+    if (t == Map<int, double>) {
+      return Map.fromEntries((data as List).map((e) =>
+              MapEntry(deserialize<int>(e['k']), deserialize<double>(e['v']))))
+          as dynamic;
+    }
     try {
       return _i6.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}

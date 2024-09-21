@@ -12,3 +12,4 @@ fields:
     startDate: DateTime 
     endDate: DateTime
     isExpired: bool
+    createAt: DateTime

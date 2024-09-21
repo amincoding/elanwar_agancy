@@ -79,6 +79,25 @@ class EndpointReservation extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Future<double?> getTotalPrices() => caller.callServerEndpoint<double?>(
+        'reservation',
+        'getTotalPrices',
+        {},
+      );
+
+  _i2.Future<double?> getTotalDebts() => caller.callServerEndpoint<double?>(
+        'reservation',
+        'getTotalDebts',
+        {},
+      );
+
+  _i2.Future<Map<int, double>> getTotalPricesPerMonth() =>
+      caller.callServerEndpoint<Map<int, double>>(
+        'reservation',
+        'getTotalPricesPerMonth',
+        {},
+      );
+
   _i2.Future<_i3.Reservation?> getIsExpired(bool isExpired) =>
       caller.callServerEndpoint<_i3.Reservation?>(
         'reservation',

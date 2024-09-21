@@ -7,6 +7,9 @@ reservation:
   - getByRoomNumber:
   - getByTotalPrice:
   - getMaxPrice:
+  - getTotalPrices:
+  - getTotalDebts:
+  - getTotalPricesPerMonth:
   - getIsExpired:
   - create:
 user:

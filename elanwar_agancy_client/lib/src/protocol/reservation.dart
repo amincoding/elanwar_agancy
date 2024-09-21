@@ -26,6 +26,7 @@ abstract class Reservation implements _i1.SerializableModel {
     required this.startDate,
     required this.endDate,
     required this.isExpired,
+    required this.createAt,
   });
 
   factory Reservation({
@@ -41,6 +42,7 @@ abstract class Reservation implements _i1.SerializableModel {
     required DateTime startDate,
     required DateTime endDate,
     required bool isExpired,
+    required DateTime createAt,
   }) = _ReservationImpl;
 
   factory Reservation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -61,6 +63,8 @@ abstract class Reservation implements _i1.SerializableModel {
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['startDate']),
       endDate: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['endDate']),
       isExpired: jsonSerialization['isExpired'] as bool,
+      createAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createAt']),
     );
   }
 
@@ -91,6 +95,8 @@ abstract class Reservation implements _i1.SerializableModel {
 
   bool isExpired;
 
+  DateTime createAt;
+
   Reservation copyWith({
     int? id,
     int? userId,
@@ -104,6 +110,7 @@ abstract class Reservation implements _i1.SerializableModel {
     DateTime? startDate,
     DateTime? endDate,
     bool? isExpired,
+    DateTime? createAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -120,6 +127,7 @@ abstract class Reservation implements _i1.SerializableModel {
       'startDate': startDate.toJson(),
       'endDate': endDate.toJson(),
       'isExpired': isExpired,
+      'createAt': createAt.toJson(),
     };
   }
 
@@ -145,6 +153,7 @@ class _ReservationImpl extends Reservation {
     required DateTime startDate,
     required DateTime endDate,
     required bool isExpired,
+    required DateTime createAt,
   }) : super._(
           id: id,
           userId: userId,
@@ -158,6 +167,7 @@ class _ReservationImpl extends Reservation {
           startDate: startDate,
           endDate: endDate,
           isExpired: isExpired,
+          createAt: createAt,
         );
 
   @override
@@ -174,6 +184,7 @@ class _ReservationImpl extends Reservation {
     DateTime? startDate,
     DateTime? endDate,
     bool? isExpired,
+    DateTime? createAt,
   }) {
     return Reservation(
       id: id is int? ? id : this.id,
@@ -188,6 +199,7 @@ class _ReservationImpl extends Reservation {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       isExpired: isExpired ?? this.isExpired,
+      createAt: createAt ?? this.createAt,
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/screens/ma
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen_android.dart';
 import 'package:elanwar_agancy_flutter/features/login/screens/app_container.dart';
-import 'package:elanwar_agancy_flutter/features/stats/screens/starts_screen.dart';
+import 'package:elanwar_agancy_flutter/features/stats/screens/stats_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

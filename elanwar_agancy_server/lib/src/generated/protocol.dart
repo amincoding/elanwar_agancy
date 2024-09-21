@@ -102,6 +102,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'bool',
         ),
+        _i2.ColumnDefinition(
+          name: 'createAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -243,6 +249,11 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List)
           .map((e) => deserialize<_i7.Reservation?>(e))
           .toList() as dynamic;
+    }
+    if (t == Map<int, double>) {
+      return Map.fromEntries((data as List).map((e) =>
+              MapEntry(deserialize<int>(e['k']), deserialize<double>(e['v']))))
+          as dynamic;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

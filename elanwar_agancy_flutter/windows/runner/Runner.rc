@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "elanwar_agancy_flutter" "\0"
+            VALUE "CompanyName", "com.LBSsoftware.aminabdedaiem" "\0"
+            VALUE "FileDescription", "وكالة انوار الصباح للسياحة والأسفار أدرار" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "elanwar_agancy_flutter" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "elanwar_agancy_flutter.exe" "\0"
-            VALUE "ProductName", "elanwar_agancy_flutter" "\0"
+            VALUE "InternalName", "elanwar_agancy" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 amin abdedaiem All rights reserved." "\0"
+            VALUE "OriginalFilename", "elanwar_agancy_adrar.exe" "\0"
+            VALUE "ProductName", "وكالة انوار الصباح للسياحة والأسفار" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

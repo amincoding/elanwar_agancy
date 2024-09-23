@@ -46,7 +46,21 @@ dev_dependencies:
   flutter_lints: ">=3.0.0 <5.0.0"
   flutter_test:
     sdk: flutter
+  msix: ^3.16.8
 
+msix_config:
+  display_name: Anwar al-sabah travel agency
+  publisher_display_name: Amin Abdedaiem
+  identity_name: LBSsoftware.com.anwar-alsabah
+  msix_version: 1.0.0.1
+  logo_path: C:/Users/amina/Downloads/anwar.png
+  capabilities: internetClient, internetClientServer
+  publish_folder_path: C:/Users/amina/OneDrive/Desktop/elanwar_agancy_flutter.msix
+  hours_between_update_checks: 0
+  automatic_background_task: true
+  update_blocks_activation: true
+  show_prompt: true
+  force_update_from_any_version: false
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.

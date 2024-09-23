@@ -20,8 +20,8 @@ insightsServer:
 
 # Configuration for the web server.
 webServer:
-  port: 8082
-  publicHost: app.examplepod.com
+  port: 5432
+  publicHost: dpg-crorvpm8ii6s739pug30-a
   publicPort: 443
   publicScheme: https
 

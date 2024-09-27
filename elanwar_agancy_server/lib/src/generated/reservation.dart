@@ -28,6 +28,9 @@ abstract class Reservation extends _i1.TableRow
     required this.endDate,
     required this.isExpired,
     required this.createAt,
+    required this.idCardNumber,
+    required this.phoneNumber,
+    required this.adress,
   }) : super(id);
 
   factory Reservation({
@@ -44,6 +47,9 @@ abstract class Reservation extends _i1.TableRow
     required DateTime endDate,
     required bool isExpired,
     required DateTime createAt,
+    required int idCardNumber,
+    required String phoneNumber,
+    required String adress,
   }) = _ReservationImpl;
 
   factory Reservation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -66,6 +72,9 @@ abstract class Reservation extends _i1.TableRow
       isExpired: jsonSerialization['isExpired'] as bool,
       createAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createAt']),
+      idCardNumber: jsonSerialization['idCardNumber'] as int,
+      phoneNumber: jsonSerialization['phoneNumber'] as String,
+      adress: jsonSerialization['adress'] as String,
     );
   }
 
@@ -97,6 +106,12 @@ abstract class Reservation extends _i1.TableRow
 
   DateTime createAt;
 
+  int idCardNumber;
+
+  String phoneNumber;
+
+  String adress;
+
   @override
   _i1.Table get table => t;
 
@@ -114,6 +129,9 @@ abstract class Reservation extends _i1.TableRow
     DateTime? endDate,
     bool? isExpired,
     DateTime? createAt,
+    int? idCardNumber,
+    String? phoneNumber,
+    String? adress,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -131,6 +149,9 @@ abstract class Reservation extends _i1.TableRow
       'endDate': endDate.toJson(),
       'isExpired': isExpired,
       'createAt': createAt.toJson(),
+      'idCardNumber': idCardNumber,
+      'phoneNumber': phoneNumber,
+      'adress': adress,
     };
   }
 
@@ -150,6 +171,9 @@ abstract class Reservation extends _i1.TableRow
       'endDate': endDate.toJson(),
       'isExpired': isExpired,
       'createAt': createAt.toJson(),
+      'idCardNumber': idCardNumber,
+      'phoneNumber': phoneNumber,
+      'adress': adress,
     };
   }
 
@@ -200,6 +224,9 @@ class _ReservationImpl extends Reservation {
     required DateTime endDate,
     required bool isExpired,
     required DateTime createAt,
+    required int idCardNumber,
+    required String phoneNumber,
+    required String adress,
   }) : super._(
           id: id,
           userId: userId,
@@ -214,6 +241,9 @@ class _ReservationImpl extends Reservation {
           endDate: endDate,
           isExpired: isExpired,
           createAt: createAt,
+          idCardNumber: idCardNumber,
+          phoneNumber: phoneNumber,
+          adress: adress,
         );
 
   @override
@@ -231,6 +261,9 @@ class _ReservationImpl extends Reservation {
     DateTime? endDate,
     bool? isExpired,
     DateTime? createAt,
+    int? idCardNumber,
+    String? phoneNumber,
+    String? adress,
   }) {
     return Reservation(
       id: id is int? ? id : this.id,
@@ -246,6 +279,9 @@ class _ReservationImpl extends Reservation {
       endDate: endDate ?? this.endDate,
       isExpired: isExpired ?? this.isExpired,
       createAt: createAt ?? this.createAt,
+      idCardNumber: idCardNumber ?? this.idCardNumber,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      adress: adress ?? this.adress,
     );
   }
 }
@@ -296,6 +332,18 @@ class ReservationTable extends _i1.Table {
       'createAt',
       this,
     );
+    idCardNumber = _i1.ColumnInt(
+      'idCardNumber',
+      this,
+    );
+    phoneNumber = _i1.ColumnString(
+      'phoneNumber',
+      this,
+    );
+    adress = _i1.ColumnString(
+      'adress',
+      this,
+    );
   }
 
   late final _i1.ColumnInt userId;
@@ -321,6 +369,12 @@ class ReservationTable extends _i1.Table {
   late final _i1.ColumnBool isExpired;
 
   late final _i1.ColumnDateTime createAt;
+
+  late final _i1.ColumnInt idCardNumber;
+
+  late final _i1.ColumnString phoneNumber;
+
+  late final _i1.ColumnString adress;
 
   _i2.UserTable get user {
     if (_user != null) return _user!;
@@ -349,6 +403,9 @@ class ReservationTable extends _i1.Table {
         endDate,
         isExpired,
         createAt,
+        idCardNumber,
+        phoneNumber,
+        adress,
       ];
 
   @override

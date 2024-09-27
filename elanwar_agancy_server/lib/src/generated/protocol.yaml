@@ -12,6 +12,8 @@ reservation:
   - getTotalPricesPerMonth:
   - getIsExpired:
   - create:
+  - update:
+  - delete:
 user:
   - get:
   - create:

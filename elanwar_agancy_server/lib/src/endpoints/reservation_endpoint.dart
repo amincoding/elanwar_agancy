@@ -125,4 +125,30 @@ class ReservationEndpoint extends Endpoint {
     await Reservation.db.insertRow(session, reservation);
     return true;
   }
+
+  Future<bool?> update(Session session, Reservation reservation) async {
+    await Reservation.db.updateRow(
+      session,
+      reservation,
+    );
+    return true;
+  }
+
+  Future<bool?> delete(Session session, int id) async {
+    // Check if the reservation exists
+    var reservation = await Reservation.db.findFirstRow(
+      session,
+      where: (row) => row.id.equals(id),
+    );
+
+    if (reservation != null) {
+      await Reservation.db.deleteWhere(
+        session,
+        where: (p0) => p0.id.equals(id),
+      );
+      return true; // Return true if the deletion was successful
+    }
+
+    return false; // Return false if the reservation was not found
+  }
 }

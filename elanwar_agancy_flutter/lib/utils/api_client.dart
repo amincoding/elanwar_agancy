@@ -17,9 +17,7 @@ class ApiClientImplementation extends ApiClient {
     String localIp = await _getLocalIpAddress();
 
     client = Client(
-      Platform.isAndroid
-          ? 'http://$localIp:8080/' // Using the local IP address
-          : 'http://localhost:8080/',
+      'http://localhost:8080/',
       authenticationKeyManager: FlutterAuthenticationKeyManager(),
     )..connectivityMonitor = FlutterConnectivityMonitor();
 

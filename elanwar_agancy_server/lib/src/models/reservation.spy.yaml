@@ -12,4 +12,7 @@ fields:
     startDate: DateTime 
     endDate: DateTime
     isExpired: bool
-    createAt: DateTime
+    createAt: DateTime  
+    idCardNumber: int
+    phoneNumber: String
+    adress: String

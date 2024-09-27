@@ -62,7 +62,7 @@ class _StartsScreenState extends ConsumerState<StartsScreen> {
               )),
         ],
       ),
-      body: Column(
+      body: ListView(
         children: [
           Padding(
             padding: EdgeInsets.only(

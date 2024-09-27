@@ -27,6 +27,9 @@ abstract class Reservation implements _i1.SerializableModel {
     required this.endDate,
     required this.isExpired,
     required this.createAt,
+    required this.idCardNumber,
+    required this.phoneNumber,
+    required this.adress,
   });
 
   factory Reservation({
@@ -43,6 +46,9 @@ abstract class Reservation implements _i1.SerializableModel {
     required DateTime endDate,
     required bool isExpired,
     required DateTime createAt,
+    required int idCardNumber,
+    required String phoneNumber,
+    required String adress,
   }) = _ReservationImpl;
 
   factory Reservation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -65,6 +71,9 @@ abstract class Reservation implements _i1.SerializableModel {
       isExpired: jsonSerialization['isExpired'] as bool,
       createAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createAt']),
+      idCardNumber: jsonSerialization['idCardNumber'] as int,
+      phoneNumber: jsonSerialization['phoneNumber'] as String,
+      adress: jsonSerialization['adress'] as String,
     );
   }
 
@@ -97,6 +106,12 @@ abstract class Reservation implements _i1.SerializableModel {
 
   DateTime createAt;
 
+  int idCardNumber;
+
+  String phoneNumber;
+
+  String adress;
+
   Reservation copyWith({
     int? id,
     int? userId,
@@ -111,6 +126,9 @@ abstract class Reservation implements _i1.SerializableModel {
     DateTime? endDate,
     bool? isExpired,
     DateTime? createAt,
+    int? idCardNumber,
+    String? phoneNumber,
+    String? adress,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -128,6 +146,9 @@ abstract class Reservation implements _i1.SerializableModel {
       'endDate': endDate.toJson(),
       'isExpired': isExpired,
       'createAt': createAt.toJson(),
+      'idCardNumber': idCardNumber,
+      'phoneNumber': phoneNumber,
+      'adress': adress,
     };
   }
 
@@ -154,6 +175,9 @@ class _ReservationImpl extends Reservation {
     required DateTime endDate,
     required bool isExpired,
     required DateTime createAt,
+    required int idCardNumber,
+    required String phoneNumber,
+    required String adress,
   }) : super._(
           id: id,
           userId: userId,
@@ -168,6 +192,9 @@ class _ReservationImpl extends Reservation {
           endDate: endDate,
           isExpired: isExpired,
           createAt: createAt,
+          idCardNumber: idCardNumber,
+          phoneNumber: phoneNumber,
+          adress: adress,
         );
 
   @override
@@ -185,6 +212,9 @@ class _ReservationImpl extends Reservation {
     DateTime? endDate,
     bool? isExpired,
     DateTime? createAt,
+    int? idCardNumber,
+    String? phoneNumber,
+    String? adress,
   }) {
     return Reservation(
       id: id is int? ? id : this.id,
@@ -200,6 +230,9 @@ class _ReservationImpl extends Reservation {
       endDate: endDate ?? this.endDate,
       isExpired: isExpired ?? this.isExpired,
       createAt: createAt ?? this.createAt,
+      idCardNumber: idCardNumber ?? this.idCardNumber,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      adress: adress ?? this.adress,
     );
   }
 }

@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:elanwar_agancy_client/elanwar_agancy_client.dart';
 import 'package:elanwar_agancy_flutter/core/providers/session_provider.dart';
-import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/add_reservation_provider.dart';
+import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/providers/add_reservation_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/get_all_reservations_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen_android.dart';
 import 'package:elanwar_agancy_flutter/features/stats/providers/max_price_provider.dart';
+import 'package:elanwar_agancy_flutter/utils/toast_utils.dart';
+import 'package:elanwar_agancy_flutter/utils/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -115,21 +117,20 @@ class MainScreen extends ConsumerWidget {
 
           // ListTile for adding a new customer
           maxPrice == null
-              ? const ListTile(
-                  leading: Icon(Icons.bar_chart_rounded, color: Colors.blue),
-                  title: Text(
-                    textDirection: TextDirection.rtl,
-                    'الإحصائيات',
+              ? const Center(
+                  child: Text(
+                    "لا توجد إحصائيات",
                     style: TextStyle(
-                      fontFamily: "Aref",
                       fontSize: 22,
+                      fontFamily: "Aref",
                     ),
                   ),
-                  onTap: null,
                 )
               : ListTile(
-                  leading:
-                      const Icon(Icons.bar_chart_rounded, color: Colors.blue),
+                  leading: const Icon(
+                    Icons.bar_chart_rounded,
+                    color: Colors.blue,
+                  ),
                   title: const Text(
                     textDirection: TextDirection.rtl,
                     'الإحصائيات',
@@ -202,11 +203,14 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
   TextEditingController roomNumberController = TextEditingController();
   TextEditingController totalPriceController = TextEditingController();
   TextEditingController payedController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController idCardNumberController = TextEditingController();
+  TextEditingController adressController = TextEditingController();
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   TimeOfDay? selectedStartTime;
   TimeOfDay? selectedEndTime;
-
+  final formKey = GlobalKey<FormState>();
   return showDialog<void>(
     barrierColor: Colors.blue[50],
     context: context,
@@ -225,13 +229,18 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
           bool isDebtVisible = calculateRemainingDebt() > 0;
 
           // Function to pick date
-          Future<void> _pickDate(BuildContext context, bool isStart) async {
+          Future<void> _pickDate(BuildContext context, bool isStart,
+              {DateTime? initialDate}) async {
+            // Use the supplied initialDate or default to now
+            DateTime dateToShow = initialDate ?? DateTime.now();
+
             DateTime? pickedDate = await showDatePicker(
               context: context,
-              initialDate: DateTime.now(),
+              initialDate: dateToShow,
               firstDate: DateTime(2000),
               lastDate: DateTime(2101),
             );
+
             if (pickedDate != null) {
               setState(() {
                 if (isStart) {
@@ -244,11 +253,16 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
           }
 
           // Function to pick time
-          Future<void> _pickTime(BuildContext context, bool isStart) async {
+          Future<void> _pickTime(BuildContext context, bool isStart,
+              {TimeOfDay? initialTime}) async {
+            // Use the supplied initialTime or default to now
+            TimeOfDay timeToShow = initialTime ?? TimeOfDay.now();
+
             TimeOfDay? pickedTime = await showTimePicker(
               context: context,
-              initialTime: TimeOfDay.now(),
+              initialTime: timeToShow,
             );
+
             if (pickedTime != null) {
               setState(() {
                 if (isStart) {
@@ -274,181 +288,238 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
             content: SizedBox(
               width: MediaQuery.of(context).size.width * 0.7,
               child: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      child: Image.asset(
-                        "assets/images/client.png",
+                child: Form(
+                  key: formKey,
+                  child: ListBody(
+                    children: <Widget>[
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        child: Image.asset(
+                          "assets/images/client.png",
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          // Full Name TextField
-                          _buildTravelTextField(
-                            label: 'الإسم الكامل',
-                            hint: 'الإسم الكامل',
-                            controller: fullNameController,
-                            icon: const Icon(
-                              Icons.text_fields_outlined,
-                              color: Colors.blue,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            // Full Name TextField
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'الإسم الكامل'),
+                              label: 'الإسم الكامل',
+                              hint: 'الإسم الكامل',
+                              controller: fullNameController,
+                              icon: const Icon(
+                                Icons.text_fields_outlined,
+                                color: Colors.blue,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
+                            const SizedBox(height: 10),
 
-                          // Hotel Name TextField
-                          _buildTravelTextField(
-                            label: 'إسم الفندق',
-                            hint: 'إسم الفندق',
-                            controller: hotelNameController,
-                            icon: const Icon(
-                              Icons.home_work_outlined,
-                              color: Colors.blue,
+                            // Hotel Name TextField
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'إسم الفندق'),
+                              label: 'إسم الفندق',
+                              hint: 'إسم الفندق',
+                              controller: hotelNameController,
+                              icon: const Icon(
+                                Icons.home_work_outlined,
+                                color: Colors.blue,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
+                            const SizedBox(height: 10),
 
-                          // Room Number TextField
-                          _buildTravelTextField(
-                            label: 'رقم الغرفة',
-                            hint: 'رقم الغرفة',
-                            controller: roomNumberController,
-                            icon: const Icon(
-                              Icons.bed,
-                              color: Colors.blue,
+                            // Room Number TextField
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'رقم الغرفة'),
+                              label: 'رقم الغرفة',
+                              hint: 'رقم الغرفة',
+                              controller: roomNumberController,
+                              icon: const Icon(
+                                Icons.bed,
+                                color: Colors.blue,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-
-                          // Total Price TextField
-                          _buildTravelTextField(
-                            label: 'السعر الإجمالي',
-                            hint: 'السعر الإجمالي',
-                            controller: totalPriceController,
-                            icon: const Icon(
-                              Icons.price_check_sharp,
-                              color: Colors.blue,
+                            const SizedBox(height: 10),
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'رقم بطاقة التعريق'),
+                              label: 'رقم بطاقة التعريق',
+                              hint: 'رقم بطاقة التعريق',
+                              controller: idCardNumberController,
+                              icon: const Icon(
+                                Icons.call_to_action_rounded,
+                                color: Colors.blue,
+                              ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                isDebtVisible = calculateRemainingDebt() > 0;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-
-                          // Payed TextField
-                          _buildTravelTextField(
-                            label: 'المبلغ المدفوع',
-                            hint: 'المبلغ المدفوع',
-                            controller: payedController,
-                            icon: const Icon(
-                              Icons.monetization_on,
-                              color: Colors.blue,
+                            const SizedBox(height: 10),
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorPhoneNumber(
+                                      value),
+                              label: 'رقم الهاتق',
+                              hint: 'رقم الهاتق',
+                              controller: phoneNumberController,
+                              icon: const Icon(
+                                Icons.phone,
+                                color: Colors.blue,
+                              ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                isDebtVisible = calculateRemainingDebt() > 0;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
+                            const SizedBox(height: 10),
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'مكان السكن'),
+                              label: 'مكان السكن',
+                              hint: 'مكان السكن',
+                              controller: adressController,
+                              icon: const Icon(
+                                Icons.phone,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
 
-                          // Debt (readonly, showing remaining price)
-                          if (isDebtVisible)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 125,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.blue[50],
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      ("دج ${calculateRemainingDebt().toString()}"),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
+                            // Total Price TextField
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'السعر الإجمالي'),
+                              label: 'السعر الإجمالي',
+                              hint: 'السعر الإجمالي',
+                              controller: totalPriceController,
+                              icon: const Icon(
+                                Icons.price_check_sharp,
+                                color: Colors.blue,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  isDebtVisible = calculateRemainingDebt() > 0;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Payed TextField
+                            _buildTravelTextField(
+                              validator: (value) =>
+                                  ValidationUtils.formValidatorNotEmpty(
+                                      value, 'المبلغ المدفوع'),
+                              label: 'المبلغ المدفوع',
+                              hint: 'المبلغ المدفوع',
+                              controller: payedController,
+                              icon: const Icon(
+                                Icons.monetization_on,
+                                color: Colors.blue,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  isDebtVisible = calculateRemainingDebt() > 0;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Debt (readonly, showing remaining price)
+                            if (isDebtVisible)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 125,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.blue[50],
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        ("دج ${calculateRemainingDebt().toString()}"),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'الباقي',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            const SizedBox(height: 20),
+
+                            // Date & Time Pickers for Start Date
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () => _pickDate(context, true),
+                                  child: Text(
+                                    selectedStartDate != null
+                                        ? "تم الإختيار"
+                                        : 'اختر تاريخ البدء',
+                                  ),
                                 ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'الباقي',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
+                                SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.001),
+                                ElevatedButton(
+                                  onPressed: () => _pickTime(context, true),
+                                  child: Text(
+                                    selectedStartTime != null
+                                        ? "تم الإختيار"
+                                        : 'اختر وقت البدء',
                                   ),
                                 ),
                               ],
                             ),
 
-                          const SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
-                          // Date & Time Pickers for Start Date
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () => _pickDate(context, true),
-                                child: Text(
-                                  selectedStartDate != null
-                                      ? "${selectedStartDate!.toLocal()}"
-                                      : 'اختر تاريخ البدء',
+                            // Date & Time Pickers for End Date
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () => _pickDate(context, false),
+                                  child: Text(
+                                    selectedEndDate != null
+                                        ? "تم الإختيار"
+                                        : 'اختر تاريخ النهاية',
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.001),
-                              ElevatedButton(
-                                onPressed: () => _pickTime(context, true),
-                                child: Text(
-                                  selectedStartTime != null
-                                      ? selectedStartTime!.format(context)
-                                      : 'اختر وقت البدء',
+                                SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.001),
+                                ElevatedButton(
+                                  onPressed: () => _pickTime(context, false),
+                                  child: Text(
+                                    selectedEndTime != null
+                                        ? "تم الإختيار"
+                                        : 'اختر وقت النهاية',
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // Date & Time Pickers for End Date
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () => _pickDate(context, false),
-                                child: Text(
-                                  selectedEndDate != null
-                                      ? "${selectedEndDate!.toLocal()}"
-                                      : 'اختر تاريخ النهاية',
-                                ),
-                              ),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.001),
-                              ElevatedButton(
-                                onPressed: () => _pickTime(context, false),
-                                child: Text(
-                                  selectedEndTime != null
-                                      ? selectedEndTime!.format(context)
-                                      : 'اختر وقت النهاية',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -474,24 +545,36 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                         selectedEndTime!.hour,
                         selectedEndTime!.minute,
                       );
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
+                      // TODO
+                      if ((startTime == null || endTime == null)) {
+                        return;
+                      }
                       ref.read(
                         addReservationProvider(
                           Reservation(
-                            userId: user!,
-                            fullName: fullNameController.text,
-                            hotel: hotelNameController.text,
-                            room: int.parse(roomNumberController.text),
-                            totalPrice: double.parse(totalPriceController.text),
-                            startDate: startTime,
-                            endDate: endTime,
-                            payed: double.parse(payedController.text),
-                            debt: double.parse(totalPriceController.text) -
-                                double.parse(payedController.text),
-                            isExpired: false,
-                            createAt: DateTime.now(),
-                          ),
+                              userId: user!,
+                              fullName: fullNameController.text,
+                              hotel: hotelNameController.text,
+                              room: int.parse(roomNumberController.text),
+                              totalPrice:
+                                  double.parse(totalPriceController.text),
+                              startDate: startTime,
+                              endDate: endTime,
+                              payed: double.parse(payedController.text),
+                              debt: double.parse(totalPriceController.text) -
+                                  double.parse(payedController.text),
+                              isExpired: false,
+                              createAt: DateTime.now(),
+                              phoneNumber: phoneNumberController.text,
+                              idCardNumber:
+                                  int.parse(idCardNumberController.text),
+                              adress: adressController.text),
                         ),
                       );
+
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
@@ -549,8 +632,9 @@ Widget _buildTravelTextField({
   required TextEditingController controller,
   required Icon icon,
   Function(String)? onChanged,
+  String? Function(String?)? validator, // Add a validator parameter
 }) {
-  return TextField(
+  return TextFormField(
     controller: controller,
     onChanged: onChanged,
     textDirection: TextDirection.rtl,
@@ -564,5 +648,6 @@ Widget _buildTravelTextField({
         borderSide: const BorderSide(color: Colors.blue),
       ),
     ),
+    validator: validator, // Attach the validator here
   );
 }

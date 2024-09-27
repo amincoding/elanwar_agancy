@@ -30,10 +30,11 @@ webServer:
 # If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
 # connect on the public IP of the database e.g. database.examplepod.com.
 database:
-  host: postgresql://lbsoftware_postgres_elanware_user:nXwdzI14hXVmkmX0bifnoWgkrkSH1s53@dpg-crorvpm8ii6s739pug30-a/lbsoftware_postgres_elanware
+  host: localhost
   port: 5432
-  name: lbsoftware_postgres_elanware
-  user: lbsoftware_postgres_elanware_user
+  name: elanwar_agancy
+  user: postgres
+  password: admin
   requireSsl: false
 
 # This is the setup for Redis. The default for the Google Cloud Engine Terraform

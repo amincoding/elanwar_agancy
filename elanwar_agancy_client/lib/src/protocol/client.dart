@@ -111,6 +111,19 @@ class EndpointReservation extends _i1.EndpointRef {
         'create',
         {'reservation': reservation},
       );
+
+  _i2.Future<bool?> update(_i3.Reservation reservation) =>
+      caller.callServerEndpoint<bool?>(
+        'reservation',
+        'update',
+        {'reservation': reservation},
+      );
+
+  _i2.Future<bool?> delete(int id) => caller.callServerEndpoint<bool?>(
+        'reservation',
+        'delete',
+        {'id': id},
+      );
 }
 
 /// {@category Endpoint}

@@ -26,7 +26,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'El-anwar agancy',
+      title: 'وكالة انوار الصباح للسياحة والأسفار ادرار',
       theme: ThemeData(
         primarySwatch: Colors.teal,
         useMaterial3: true,
@@ -40,6 +40,4 @@ class _MyAppState extends ConsumerState<MyApp> {
       routeInformationParser: router.routeInformationParser,
     );
   }
-} 
-
-
+}

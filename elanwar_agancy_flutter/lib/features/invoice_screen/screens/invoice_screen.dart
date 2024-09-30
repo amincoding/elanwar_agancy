@@ -8,22 +8,31 @@ import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/get_all_reservations_provider.dart';
 
-class InvoiceScreen extends ConsumerWidget {
+class InvoiceScreen extends ConsumerStatefulWidget {
+  const InvoiceScreen({super.key, required this.clientId});
+  static String route(int clientId) => "/invoice/$clientId";
   final int clientId;
 
-  const InvoiceScreen({super.key, required this.clientId});
-
-  // Define a route method to generate the correct path
-  static String route(int clientId) => "/invoice/$clientId";
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _InvoiceScreenState();
+}
+
+// Define a route method to generate the correct path
+
+class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
+  @override
+  Widget build(BuildContext context) {
     // Access the reservations from Riverpod provider
+
     final reservations = ref.read(getAllReservationsProvider);
+    final clientName = reservations[widget.clientId]!.fullName.toString();
+    final clientPhoneNumber =
+        reservations[widget.clientId]!.phoneNumber.toString();
+    final clientAdress = reservations[widget.clientId]!.adress.toString();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Invoice for Client $clientId'),
+        title: Text('Invoice for Client ${widget.clientId}'),
       ),
       body: Column(
         children: [
@@ -36,49 +45,45 @@ class InvoiceScreen extends ConsumerWidget {
               ),
               child: PdfPreview(
                 build: (format) => generateInvoicePdf(
-                    reservations, clientId), // Generates the PDF
-                allowPrinting: false, // Disable the default print button
+                    reservations,
+                    widget.clientId,
+                    clientName,
+                    clientPhoneNumber,
+                    clientAdress), // Generates the PDF
+                allowPrinting: true, // Disable the default print button
               ),
             ),
           ),
           SizedBox(height: 20),
           // Action buttons: Print, Email, Cancel
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () => _printPdf(reservations, clientId),
-                icon: Icon(Icons.print),
-                label: Text('Print'),
-              ),
-              ElevatedButton.icon(
-                onPressed: () => _emailPdf(),
-                icon: Icon(Icons.email),
-                label: Text('Email'),
-              ),
-              ElevatedButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Icons.cancel),
-                label: Text('Cancel'),
-                style: ElevatedButton.styleFrom(foregroundColor: Colors.red),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //   children: [
+          //     ElevatedButton.icon(
+          //       onPressed: () => _printPdf(reservations, clientId),
+          //       icon: Icon(Icons.print),
+          //       label: Text('Print'),
+          //     ),
+          //     ElevatedButton.icon(
+          //       onPressed: () => _emailPdf(),
+          //       icon: Icon(Icons.email),
+          //       label: Text('Email'),
+          //     ),
+          //     ElevatedButton.icon(
+          //       onPressed: () => Navigator.of(context).pop(),
+          //       icon: Icon(Icons.cancel),
+          //       label: Text('Cancel'),
+          //       style: ElevatedButton.styleFrom(foregroundColor: Colors.red),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
   }
 
-  Future<void> _printPdf(List<Reservation?> reservations, int clientId) async {
-    final pdfBytes = await generateInvoicePdf(reservations, clientId);
-    await Printing.layoutPdf(onLayout: (format) => pdfBytes);
-  }
-
-  void _emailPdf() {
-    // Add logic to send email with PDF attachment.
-  }
-
-  Future<Uint8List> generateInvoicePdf(reservations, clientId) async {
+  Future<Uint8List> generateInvoicePdf(reservation, clientId, clientName,
+      clientPhoneNumber, clientAdress) async {
     final pdf = pw.Document();
     var arabicFont =
         pw.Font.ttf(await rootBundle.load("assets/fonts/Hacen-Tunisia.ttf"));
@@ -90,9 +95,10 @@ class InvoiceScreen extends ConsumerWidget {
           base: arabicFont,
         ),
         pageFormat: PdfPageFormat.a4,
+        textDirection: pw.TextDirection.rtl,
         build: (context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
               // Logo and Invoice Header
               pw.Row(
@@ -102,19 +108,21 @@ class InvoiceScreen extends ConsumerWidget {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'LuxuryStore',
+                        'وكالة انوار الصباح للسياحة والأسفار ادرار',
                         style: pw.TextStyle(
                           fontSize: 24,
                           fontWeight: pw.FontWeight.bold,
+                          font: arabicFont,
                         ),
                       ),
-                      pw.Text('6146 Honey Bluff Parkway'),
-                      pw.Text('Calder, Michigan, 49628-7978'),
-                      pw.Text('United States'),
+                      pw.Text('حي 400 مسكن أدرار, الجزائر'),
+                      pw.Text('0661429999|0661417777'),
+                      pw.Text('anouaradrar001@gmail.com'),
                     ],
                   ),
                   pw.BarcodeWidget(
-                    data: '6000000001',
+                    drawText: false,
+                    data: "https://maps.app.goo.gl/KFxsmJcCokg137rq7",
                     barcode: pw.Barcode.code128(),
                     width: 100,
                     height: 50,
@@ -125,16 +133,18 @@ class InvoiceScreen extends ConsumerWidget {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
+                  pw.Text('وصل التسليم',
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        fontSize: 24,
+                        font: arabicFont,
+                      )),
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('INVOICE NUMBER',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                      pw.Text('#6000000001'),
-                      pw.Text('ORDER'),
-                      pw.Text('#6000000001'),
-                      pw.Text('ORDER DATE'),
-                      pw.Text('Dec 14, 2020, 4:18:34 PM'),
+                      pw.Text('تاريخ الطلب'),
+                      pw.Text(DateTime.now().toString()),
                     ],
                   ),
                 ],
@@ -146,29 +156,22 @@ class InvoiceScreen extends ConsumerWidget {
                     border: pw.Border.all(color: PdfColors.grey)),
                 padding: const pw.EdgeInsets.all(10),
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: pw.MainAxisAlignment.start,
                   children: [
                     pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Text('BILLED TO',
-                            style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('Customer Name: Veronica Costello'),
+                        pw.Text('فاتورة إلى',
+                            textDirection: pw.TextDirection.rtl,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: arabicFont,
+                            )),
+                        pw.Text('الإسم: ${clientName}'),
                         pw.Text('Address: 6146 Honey Bluff Parkway'),
                         pw.Text('Calder, Michigan, 49628-7978'),
                         pw.Text('United States'),
                         pw.Text('T: (555) 229-3326'),
-                      ],
-                    ),
-                    pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Text('PAYMENT & SHIPPING',
-                            style:
-                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                        pw.Text('Shipping Method: Flat Rate - Fixed'),
-                        pw.Text('Payment Method: Check / Money order'),
                       ],
                     ),
                   ],

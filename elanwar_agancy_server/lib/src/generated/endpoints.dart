@@ -95,6 +95,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['userId'],
           ),
         ),
+        'getByReservationId': _i1.MethodConnector(
+          name: 'getByReservationId',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['reservation'] as _i3.ReservationEndpoint)
+                  .getByReservationId(
+            session,
+            params['id'],
+          ),
+        ),
         'getByName': _i1.MethodConnector(
           name: 'getByName',
           params: {

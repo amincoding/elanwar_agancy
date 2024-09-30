@@ -3,6 +3,7 @@ example:
 reservation:
   - getAll:
   - getByUserId:
+  - getByReservationId:
   - getByName:
   - getByRoomNumber:
   - getByTotalPrice:

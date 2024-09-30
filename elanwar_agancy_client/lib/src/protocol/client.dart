@@ -51,6 +51,13 @@ class EndpointReservation extends _i1.EndpointRef {
         {'userId': userId},
       );
 
+  _i2.Future<_i3.Reservation?> getByReservationId(int id) =>
+      caller.callServerEndpoint<_i3.Reservation?>(
+        'reservation',
+        'getByReservationId',
+        {'id': id},
+      );
+
   _i2.Future<_i3.Reservation?> getByName(String name) =>
       caller.callServerEndpoint<_i3.Reservation?>(
         'reservation',

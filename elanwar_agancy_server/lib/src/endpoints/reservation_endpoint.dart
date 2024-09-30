@@ -18,6 +18,13 @@ class ReservationEndpoint extends Endpoint {
     );
   }
 
+  Future<Reservation?> getByReservationId(Session session, int id) async {
+    return Reservation.db.findFirstRow(
+      session,
+      where: (row) => row.id.equals(id),
+    );
+  }
+
   Future<Reservation?> getByName(Session session, String name) async {
     return Reservation.db.findFirstRow(
       session,

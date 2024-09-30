@@ -28,7 +28,7 @@ class MainScreen extends ConsumerWidget {
           ),
         ),
         title: const Text(
-          'وكالة الأنوار السياحية',
+          'وكالة انوار الصباح للسياحة والأسفار أدرار',
           style: TextStyle(
             fontFamily: "Aref",
             fontSize: 28,
@@ -69,28 +69,33 @@ class MainScreen extends ConsumerWidget {
         padding: EdgeInsets.zero,
         children: [
           // Drawer Header
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage('assets/images/anwar.png'),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'وكالة الأنوار السياحية',
-                  style: TextStyle(
-                    fontFamily: "Aref",
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage('assets/images/anwar.png'),
                   ),
-                ),
-              ],
+                  SizedBox(height: 10),
+                  Text(
+                    'وكالة انوار الصباح للسياحة والأسفار أدرار',
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                    style: TextStyle(
+                      fontFamily: "Aref",
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -143,18 +148,6 @@ class MainScreen extends ConsumerWidget {
                     context.pop();
                     context.push("/stats");
                   }),
-          const ListTile(
-            leading: Icon(Icons.add, color: Colors.blue),
-            title: Text(
-              textDirection: TextDirection.rtl,
-              'إضافة زبون',
-              style: TextStyle(
-                fontFamily: "Aref",
-                fontSize: 22,
-              ),
-            ),
-            onTap: null,
-          ),
 
           // Divider to separate logout option
           const Divider(),
@@ -546,10 +539,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                         selectedEndTime!.minute,
                       );
                       if (!formKey.currentState!.validate()) {
-                        return;
-                      }
-                      // TODO
-                      if ((startTime == null || endTime == null)) {
                         return;
                       }
                       ref.read(

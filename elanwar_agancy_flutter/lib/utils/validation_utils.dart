@@ -63,9 +63,10 @@ class ValidationUtils {
     if (value == null || value.isEmpty) {
       return "Phone number Required";
     }
-    if (!isValidPhoneNumber(value)) {
-      return "Invalid Phone number";
-    }
+    // if (!isValidPhoneNumber(value)) {
+    //   return "Invalid Phone number";
+    // }
+
     return null;
   }
 

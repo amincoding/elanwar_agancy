@@ -20,21 +20,21 @@ class _StartsScreenState extends ConsumerState<StartsScreen> {
   @override
   Widget build(BuildContext context) {
     // Fetch all required providers
-    final maxPrice = ref.watch(maxPriceProvider);
+    final maxPrice = ref.watch(maxPriceProvider) ?? 1000;
     final totalPricePerMonth = ref.watch(totalPricePerMonthProvider);
-    final totalDebts = ref.watch(totalDebtsProvider);
-    final totalMoney = ref.watch(totalMoneyProvider);
+    final totalDebts = ref.watch(totalDebtsProvider) ?? 0;
+    final totalMoney = ref.watch(totalMoneyProvider) ?? 0;
     bool isLoading() {
       return [maxPrice, totalPricePerMonth, totalDebts, totalMoney]
           .every((data) => data != null);
     }
 
     // If any provider is still loading, show a progress indicator
-    if (!isLoading()) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    // if (!isLoading()) {
+    //   return const Scaffold(
+    //     body: Center(child: CircularProgressIndicator()),
+    //   );
+    // }
 
     final List<IncomeData> data = totalPricePerMonth.entries.map((entry) {
       final month = entry.key; // Month number (1 for January, etc.)

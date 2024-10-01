@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 import 'package:elanwar_agancy_client/elanwar_agancy_client.dart';
+import 'package:elanwar_agancy_flutter/core/app_router.dart';
+import 'package:elanwar_agancy_flutter/utils/toast_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,90 +19,91 @@ class InvoiceScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _InvoiceScreenState();
 }
 
-// Define a route method to generate the correct path
-
 class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
+  late Future<Uint8List> _pdfFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfFuture = _generateInvoicePdf();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Access the reservations from Riverpod provider
-
     final reservations = ref.read(getAllReservationsProvider);
     final clientName = reservations[widget.clientId]!.fullName.toString();
-    final clientPhoneNumber =
-        reservations[widget.clientId]!.phoneNumber.toString();
-    final clientAdress = reservations[widget.clientId]!.adress.toString();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Invoice for Client ${widget.clientId}'),
+        title: Text('Invoice for Client $clientName'),
       ),
-      body: Column(
-        children: [
-          // Display the invoice PDF in a small window
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-              ),
-              child: PdfPreview(
-                build: (format) => generateInvoicePdf(
-                    reservations,
-                    widget.clientId,
-                    clientName,
-                    clientPhoneNumber,
-                    clientAdress), // Generates the PDF
-                allowPrinting: true, // Disable the default print button
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          // Action buttons: Print, Email, Cancel
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //   children: [
-          //     ElevatedButton.icon(
-          //       onPressed: () => _printPdf(reservations, clientId),
-          //       icon: Icon(Icons.print),
-          //       label: Text('Print'),
-          //     ),
-          //     ElevatedButton.icon(
-          //       onPressed: () => _emailPdf(),
-          //       icon: Icon(Icons.email),
-          //       label: Text('Email'),
-          //     ),
-          //     ElevatedButton.icon(
-          //       onPressed: () => Navigator.of(context).pop(),
-          //       icon: Icon(Icons.cancel),
-          //       label: Text('Cancel'),
-          //       style: ElevatedButton.styleFrom(foregroundColor: Colors.red),
-          //     ),
-          //   ],
-          // ),
-        ],
+      body: FutureBuilder<Uint8List>(
+        future: _pdfFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error loading PDF: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: PdfPreview(
+                      pdfFileName: "$clientName.pdf",
+                      build: (format) async =>
+                          snapshot.data!, // Use loaded PDF data
+                      allowPrinting: true,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            );
+          } else {
+            return Center(
+              child: Text('Something went wrong!'),
+            );
+          }
+        },
       ),
     );
   }
 
-  Future<Uint8List> generateInvoicePdf(reservation, clientId, clientName,
-      clientPhoneNumber, clientAdress) async {
+  Future<Uint8List> _generateInvoicePdf() async {
+    final reservations = ref.read(getAllReservationsProvider);
+    final clientName = reservations[widget.clientId]!.fullName.toString();
+    final adress = reservations[widget.clientId]!.adress.toString();
+    final hotelName = reservations[widget.clientId]!.hotel.toString();
+    final roomNumber = reservations[widget.clientId]!.room.toString();
+    final reservationID = reservations[widget.clientId]!.id.toString();
+    final reservationStart = reservations[widget.clientId]!.createAt.toString();
+    final reservationEnd = reservations[widget.clientId]!.endDate.toString();
+    final price = reservations[widget.clientId]!.totalPrice.toString();
+    final payed = reservations[widget.clientId]!.payed.toString();
+    final debt = reservations[widget.clientId]!.debt.toString();
+
     final pdf = pw.Document();
     var arabicFont =
         pw.Font.ttf(await rootBundle.load("assets/fonts/Hacen-Tunisia.ttf"));
 
-    // Define your invoice layout
     pdf.addPage(
       pw.Page(
-        theme: pw.ThemeData.withFont(
-          base: arabicFont,
-        ),
+        theme: pw.ThemeData.withFont(base: arabicFont),
         pageFormat: PdfPageFormat.a4,
         textDirection: pw.TextDirection.rtl,
         build: (context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
-              // Logo and Invoice Header
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
@@ -133,7 +136,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text('وصل التسليم',
+                  pw.Text('وصل الحجز',
                       textAlign: pw.TextAlign.center,
                       style: pw.TextStyle(
                         fontWeight: pw.FontWeight.bold,
@@ -150,7 +153,6 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                 ],
               ),
               pw.SizedBox(height: 20),
-              // Billed To Section
               pw.Container(
                 decoration: pw.BoxDecoration(
                     border: pw.Border.all(color: PdfColors.grey)),
@@ -167,41 +169,49 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                               fontWeight: pw.FontWeight.bold,
                               font: arabicFont,
                             )),
-                        pw.Text('الإسم: ${clientName}'),
-                        pw.Text('Address: 6146 Honey Bluff Parkway'),
-                        pw.Text('Calder, Michigan, 49628-7978'),
-                        pw.Text('United States'),
-                        pw.Text('T: (555) 229-3326'),
+                        pw.Text('الإسم: $clientName'),
+                        pw.Text('مكان السكن: $adress'),
+                        pw.Text('إسم الفندق: $hotelName'),
+                        pw.Text('رقم الغرفة: $roomNumber'),
+                        pw.Text('رقم الحجز: $reservationID'),
                       ],
                     ),
                   ],
                 ),
               ),
               pw.SizedBox(height: 20),
-
-              // Itemized Table
               pw.TableHelper.fromTextArray(
                 headers: [
+                  'الدين الياقي',
+                  'المدفوع',
+                  'المبلغ',
+                  'نهاية الحجز',
+                  'بداية الحجز',
+                  'رقم الغرفة',
                   'إسم الفندق',
-                  'Room number',
-                  'Resirvation start',
-                  'Resirvation end',
-                  'Amount',
-                  'Payed',
-                  'Debt ',
                 ],
-                cellAlignment: pw.Alignment.centerLeft,
-                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                tableWidth: pw.TableWidth.max,
+                tableDirection: pw.TextDirection.rtl,
+                cellAlignment: pw.Alignment.center,
+                defaultColumnWidth: pw.FixedColumnWidth(12),
+                headerStyle: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold, font: arabicFont),
                 cellStyle: pw.TextStyle(fontSize: 12),
                 data: [
-                  ['Luma Analog Watch', '1', '\$43.00'],
-                  ['Fusion Backpack', '1', '\$50.00'],
+                  [
+                    debt,
+                    payed,
+                    price,
+                    reservationEnd.toString(),
+                    reservationStart,
+                    roomNumber,
+                    hotelName
+                  ],
                 ],
               ),
               pw.SizedBox(height: 10),
               pw.Divider(),
               pw.SizedBox(height: 10),
-              // Subtotal, Shipping, Tax, and Grand Total
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.end,
                 children: [
@@ -210,35 +220,35 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                     children: [
                       pw.Row(
                         children: [
-                          pw.Text('SUBTOTAL: ',
+                          pw.Text('دج $price'),
+                          pw.Text('TOTAL HT: ',
                               style:
                                   pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('\$93.00'),
                         ],
                       ),
                       pw.Row(
                         children: [
-                          pw.Text('SHIPPING & HANDLING: ',
+                          pw.Text('دج 0.00'),
+                          pw.Text('TVA: ',
                               style:
                                   pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('\$10.00'),
                         ],
                       ),
                       pw.Row(
                         children: [
-                          pw.Text('TAX: ',
+                          pw.Text('دج $price'),
+                          pw.Text('TOTAL: ',
                               style:
                                   pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Text('\$7.67'),
                         ],
                       ),
                       pw.Row(
                         children: [
-                          pw.Text('GRAND TOTAL: ',
+                          pw.Text('دج $debt',
                               style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   color: PdfColors.red)),
-                          pw.Text('\$110.67',
+                          pw.Text('DEBT: ',
                               style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   color: PdfColors.red)),
@@ -249,13 +259,12 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                 ],
               ),
               pw.SizedBox(height: 20),
-              // Thank you note
               pw.Container(
                 padding: const pw.EdgeInsets.all(10),
                 decoration: pw.BoxDecoration(
                     border: pw.Border.all(color: PdfColors.grey)),
                 child: pw.Text(
-                  'THANK YOU FOR YOUR ORDER!\nIf you have questions about your order, you can email us at support@example.com.',
+                  'شكرا جزيلا لتعاملكم معنا، وكالة أنوار الصباح السياحية تتمنى لكم يوم سعيد',
                   textAlign: pw.TextAlign.center,
                   style: pw.TextStyle(fontSize: 12),
                 ),

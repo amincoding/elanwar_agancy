@@ -4,7 +4,8 @@ import 'package:elanwar_agancy_flutter/utils/singeltons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GetReservationByIdProvider extends StateNotifier<User?> {
-  final userClient = singelton<ApiClient>().client.user; // Serverpod Client
+  final userClient =
+      singelton<ApiClient>().client.reservation; // Serverpod Client
   final Ref ref;
 
   GetReservationByIdProvider(this.ref) : super(null);
@@ -12,8 +13,7 @@ class GetReservationByIdProvider extends StateNotifier<User?> {
   // Method to retrieve a user by ID from the server
   Future<void> fetchUserById(int userId) async {
     try {
-      final user = await userClient.
-      state = user;
+      await userClient.getByReservationId(userId);
     } catch (e) {
       // Handle error, log it or show it in the UI
       print('Error retrieving user: $e');

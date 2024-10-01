@@ -24,7 +24,10 @@ class MainScreen extends ConsumerWidget {
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+            onPressed: () {
+              ref.refresh(getAllReservationsProvider);
+              Scaffold.of(context).openDrawer();
+            },
           ),
         ),
         title: const Text(
@@ -121,33 +124,23 @@ class MainScreen extends ConsumerWidget {
           ),
 
           // ListTile for adding a new customer
-          maxPrice == null
-              ? const Center(
-                  child: Text(
-                    "لا توجد إحصائيات",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontFamily: "Aref",
-                    ),
-                  ),
-                )
-              : ListTile(
-                  leading: const Icon(
-                    Icons.bar_chart_rounded,
-                    color: Colors.blue,
-                  ),
-                  title: const Text(
-                    textDirection: TextDirection.rtl,
-                    'الإحصائيات',
-                    style: TextStyle(
-                      fontFamily: "Aref",
-                      fontSize: 22,
-                    ),
-                  ),
-                  onTap: () {
-                    context.pop();
-                    context.push("/stats");
-                  }),
+          ListTile(
+              leading: const Icon(
+                Icons.bar_chart_rounded,
+                color: Colors.blue,
+              ),
+              title: const Text(
+                textDirection: TextDirection.rtl,
+                'الإحصائيات',
+                style: TextStyle(
+                  fontFamily: "Aref",
+                  fontSize: 22,
+                ),
+              ),
+              onTap: () {
+                context.pop();
+                context.push("/stats");
+              }),
 
           // Divider to separate logout option
           const Divider(),

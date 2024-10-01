@@ -23,24 +23,6 @@ class ApiClientImplementation extends ApiClient {
 
     sessionManager = SessionManager(caller: client.modules.auth);
     await sessionManager.initialize();
-  }
+  } 
 
-  Future<String> _getLocalIpAddress() async {
-    try {
-      List<NetworkInterface> interfaces = await NetworkInterface.list(
-        includeLoopback: false,
-        type: InternetAddressType.IPv4,
-      );
-      for (var interface in interfaces) {
-        for (var addr in interface.addresses) {
-          if (!addr.isLoopback) {
-            return addr.address; // Return the first non-loopback IP address
-          }
-        }
-      }
-    } catch (e) {
-      print('Failed to get IP address: $e');
-    }
-    return '127.0.0.1'; // Fallback to localhost if IP address cannot be determined
-  }
 }

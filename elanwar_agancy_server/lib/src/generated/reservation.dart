@@ -457,7 +457,7 @@ class ReservationRepository {
   final attachRow = const ReservationAttachRowRepository._();
 
   Future<List<Reservation>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ReservationTable>? where,
     int? limit,
     int? offset,
@@ -467,20 +467,20 @@ class ReservationRepository {
     _i1.Transaction? transaction,
     ReservationInclude? include,
   }) async {
-    return session.db.find<Reservation>(
+    return databaseAccessor.db.find<Reservation>(
       where: where?.call(Reservation.t),
       orderBy: orderBy?.call(Reservation.t),
       orderByList: orderByList?.call(Reservation.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Reservation?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ReservationTable>? where,
     int? offset,
     _i1.OrderByBuilder<ReservationTable>? orderBy,
@@ -489,121 +489,121 @@ class ReservationRepository {
     _i1.Transaction? transaction,
     ReservationInclude? include,
   }) async {
-    return session.db.findFirstRow<Reservation>(
+    return databaseAccessor.db.findFirstRow<Reservation>(
       where: where?.call(Reservation.t),
       orderBy: orderBy?.call(Reservation.t),
       orderByList: orderByList?.call(Reservation.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Reservation?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     ReservationInclude? include,
   }) async {
-    return session.db.findById<Reservation>(
+    return databaseAccessor.db.findById<Reservation>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Reservation>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Reservation> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Reservation>(
+    return databaseAccessor.db.insert<Reservation>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Reservation> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Reservation row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Reservation>(
+    return databaseAccessor.db.insertRow<Reservation>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Reservation>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Reservation> rows, {
     _i1.ColumnSelections<ReservationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Reservation>(
+    return databaseAccessor.db.update<Reservation>(
       rows,
       columns: columns?.call(Reservation.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Reservation> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Reservation row, {
     _i1.ColumnSelections<ReservationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Reservation>(
+    return databaseAccessor.db.updateRow<Reservation>(
       row,
       columns: columns?.call(Reservation.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Reservation>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Reservation> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Reservation>(
+    return databaseAccessor.db.delete<Reservation>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Reservation> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Reservation row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Reservation>(
+    return databaseAccessor.db.deleteRow<Reservation>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Reservation>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ReservationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Reservation>(
+    return databaseAccessor.db.deleteWhere<Reservation>(
       where: where(Reservation.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ReservationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Reservation>(
+    return databaseAccessor.db.count<Reservation>(
       where: where?.call(Reservation.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -612,7 +612,7 @@ class ReservationAttachRowRepository {
   const ReservationAttachRowRepository._();
 
   Future<void> user(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Reservation reservation,
     _i2.User user, {
     _i1.Transaction? transaction,
@@ -625,10 +625,10 @@ class ReservationAttachRowRepository {
     }
 
     var $reservation = reservation.copyWith(userId: user.id);
-    await session.db.updateRow<Reservation>(
+    await databaseAccessor.db.updateRow<Reservation>(
       $reservation,
       columns: [Reservation.t.userId],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

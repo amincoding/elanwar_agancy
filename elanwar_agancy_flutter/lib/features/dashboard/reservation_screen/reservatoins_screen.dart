@@ -270,9 +270,9 @@ class _ReservationsScreenState extends ConsumerState<ReservationsScreen> {
                                 index.toString())), // Display the row number
                             DataCell(TextButton(
                               child: const Icon(Icons.print),
-                              onPressed: () {
-                                context.push(
-                                    InvoiceScreen.route(reservation.id! - 1));
+                              onPressed: () async {
+                                await context
+                                    .push(InvoiceScreen.route(index - 1));
                               },
                             )),
                           ],

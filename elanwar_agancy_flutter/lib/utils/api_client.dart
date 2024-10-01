@@ -14,8 +14,6 @@ abstract class ApiClient {
 class ApiClientImplementation extends ApiClient {
   @override
   Future<void> init() async {
-    String localIp = await _getLocalIpAddress();
-
     client = Client(
       'http://localhost:8080/',
       authenticationKeyManager: FlutterAuthenticationKeyManager(),
@@ -23,6 +21,5 @@ class ApiClientImplementation extends ApiClient {
 
     sessionManager = SessionManager(caller: client.modules.auth);
     await sessionManager.initialize();
-  } 
-
+  }
 }

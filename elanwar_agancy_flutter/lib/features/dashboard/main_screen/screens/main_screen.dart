@@ -1,5 +1,7 @@
 import 'dart:io';
-
+import 'package:elanwar_agancy_flutter/utils/toast_utils.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 import 'package:elanwar_agancy_client/elanwar_agancy_client.dart';
 import 'package:elanwar_agancy_flutter/core/providers/session_provider.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/providers/add_reservation_provider.dart';
@@ -7,11 +9,12 @@ import 'package:elanwar_agancy_flutter/features/dashboard/main_screen/providers/
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen.dart';
 import 'package:elanwar_agancy_flutter/features/dashboard/reservation_screen/reservatoins_screen_android.dart';
 import 'package:elanwar_agancy_flutter/features/stats/providers/max_price_provider.dart';
-import 'package:elanwar_agancy_flutter/utils/toast_utils.dart';
 import 'package:elanwar_agancy_flutter/utils/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:flutter/services.dart' show rootBundle;
 
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
@@ -40,6 +43,12 @@ class MainScreen extends ConsumerWidget {
         ),
         centerTitle: true,
         actions: [
+          TextButton(
+            child: const Text("Export to excel"),
+            onPressed: () async {
+              createExcelTemplate(context);
+            },
+          ),
           TextButton(
               onPressed: () {
                 ref.refresh(getAllReservationsProvider);
@@ -183,6 +192,7 @@ class MainScreen extends ConsumerWidget {
   }
 }
 
+final showFoodPriceProvider = StateProvider<bool>((ref) => false);
 Future<void> add(BuildContext context, WidgetRef ref) async {
   TextEditingController fullNameController = TextEditingController();
   TextEditingController hotelNameController = TextEditingController();
@@ -192,6 +202,7 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController idCardNumberController = TextEditingController();
   TextEditingController adressController = TextEditingController();
+
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   TimeOfDay? selectedStartTime;
@@ -290,9 +301,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                           children: [
                             // Full Name TextField
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'الإسم الكامل'),
                               label: 'الإسم الكامل',
                               hint: 'الإسم الكامل',
                               controller: fullNameController,
@@ -305,9 +313,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
 
                             // Hotel Name TextField
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'إسم الفندق'),
                               label: 'إسم الفندق',
                               hint: 'إسم الفندق',
                               controller: hotelNameController,
@@ -320,9 +325,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
 
                             // Room Number TextField
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'رقم الغرفة'),
                               label: 'رقم الغرفة',
                               hint: 'رقم الغرفة',
                               controller: roomNumberController,
@@ -333,11 +335,8 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                             ),
                             const SizedBox(height: 10),
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'رقم بطاقة التعريق'),
-                              label: 'رقم بطاقة التعريق',
-                              hint: 'رقم بطاقة التعريق',
+                              label: 'رقم جواز السفر',
+                              hint: 'رقم جواز السفر',
                               controller: idCardNumberController,
                               icon: const Icon(
                                 Icons.call_to_action_rounded,
@@ -346,11 +345,8 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                             ),
                             const SizedBox(height: 10),
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorPhoneNumber(
-                                      value),
-                              label: 'رقم الهاتق',
-                              hint: 'رقم الهاتق',
+                              label: 'رقم الهاتف',
+                              hint: 'رقم الهاتف',
                               controller: phoneNumberController,
                               icon: const Icon(
                                 Icons.phone,
@@ -359,9 +355,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                             ),
                             const SizedBox(height: 10),
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'مكان السكن'),
                               label: 'مكان السكن',
                               hint: 'مكان السكن',
                               controller: adressController,
@@ -371,12 +364,30 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            Switch(
+                              value: ref.watch(
+                                  showFoodPriceProvider), // Watch the toggle state
+                              onChanged: (bool value) {
+                                ref.read(showFoodPriceProvider.notifier).state =
+                                    value; // Update the state when toggled
+                              },
+                            ),
+
+                            if (ref.watch(showFoodPriceProvider))
+                              _buildTravelTextField(
+                                label: 'سعر الإطعام',
+                                hint: 'سعر الإطعام',
+                                controller: adressController,
+                                icon: const Icon(
+                                  Icons.food_bank,
+                                  color: Colors.blue,
+                                ),
+                              ),
+
+                            const SizedBox(height: 10),
 
                             // Total Price TextField
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'السعر الإجمالي'),
                               label: 'السعر الإجمالي',
                               hint: 'السعر الإجمالي',
                               controller: totalPriceController,
@@ -394,9 +405,6 @@ Future<void> add(BuildContext context, WidgetRef ref) async {
 
                             // Payed TextField
                             _buildTravelTextField(
-                              validator: (value) =>
-                                  ValidationUtils.formValidatorNotEmpty(
-                                      value, 'المبلغ المدفوع'),
                               label: 'المبلغ المدفوع',
                               hint: 'المبلغ المدفوع',
                               controller: payedController,
@@ -632,4 +640,77 @@ Widget _buildTravelTextField({
     ),
     validator: validator, // Attach the validator here
   );
+}
+
+Future<void> createExcelTemplate(context) async {
+  // Get the user's home directory (for Windows and macOS/Linux)
+  final Directory homeDirectory = Directory(
+      Platform.environment['USERPROFILE'] ?? Platform.environment['HOME']!);
+
+  // Get the desktop directory path
+  final String desktopPath = path.join(homeDirectory.path, 'Desktop');
+
+  // Create a new Excel Workbook
+  final xlsio.Workbook workbook = xlsio.Workbook();
+
+  // Access the first worksheet
+  final xlsio.Worksheet sheet = workbook.worksheets[0];
+
+  // Set the worksheet name (optional)
+  sheet.name = 'anouar agency';
+
+  // Add headers to the first row (customize as needed)
+  sheet.getRangeByName('A1').setText('ID');
+  sheet.getRangeByName('B1').setText('Name');
+  sheet.getRangeByName('C1').setText('Date');
+  sheet.getRangeByName('D1').setText('Amount');
+
+  // Add a few rows of example data (optional)
+  sheet.getRangeByName('A2').setNumber(1);
+  sheet.getRangeByName('B2').setText('Product 1');
+  sheet.getRangeByName('C2').setDateTime(DateTime.now());
+  sheet.getRangeByName('D2').setNumber(100.50);
+
+  sheet.getRangeByName('A3').setNumber(2);
+  sheet.getRangeByName('B3').setText('Product 2');
+  sheet.getRangeByName('C3').setDateTime(DateTime.now());
+  sheet.getRangeByName('D3').setNumber(200.75);
+
+  // Optional: Add formatting (bold headers)
+  final xlsio.Range headerRange = sheet.getRangeByName('A1:D1');
+  headerRange.cellStyle.bold = true;
+
+  // Load the image from assets
+  try {
+    final ByteData imageData = await rootBundle.load('assets/images/anwar.png');
+    final List<int> imageBytes = imageData.buffer.asUint8List();
+
+    // Insert the image into the sheet at the specified range
+    final xlsio.Picture picture = sheet.pictures.addStream(1, 5, imageBytes);
+    picture.lastRow = 1; // Customize the image placement
+    picture.lastColumn = 1;
+  } catch (e) {
+    toast(context, "Error loading image", e.toString());
+  }
+
+  // Save the workbook as a file on the desktop
+  List<int> bytes = workbook.saveAsStream();
+
+  // Dispose the workbook to release resources
+  workbook.dispose();
+
+  // Specify the path to save the file on the desktop
+  final String filePath = path.join(desktopPath, 'anouar.xlsx');
+  final File file = File(filePath);
+
+  // Write the Excel file to the desktop
+  try {
+    await file.writeAsBytes(bytes, flush: true);
+    toast(context, "File save successful",
+        "Check your desktop for the saved Excel file.");
+  } catch (e) {
+    toast(context, "Error saving the file", e.toString());
+  }
+
+  print('Excel template created and saved at: $filePath');
 }

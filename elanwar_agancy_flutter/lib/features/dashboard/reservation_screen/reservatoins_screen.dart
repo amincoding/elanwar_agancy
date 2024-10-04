@@ -438,8 +438,8 @@ Future<void> edit(BuildContext context, WidgetRef ref, int id) async {
                           ),
                           const SizedBox(height: 10),
                           _buildTravelTextField(
-                            label: 'رقم الهاتق',
-                            hint: 'رقم الهاتق',
+                            label: 'رقم الهاتف',
+                            hint: 'رقم الهاتف',
                             controller: phoneNumberController,
                             icon: const Icon(
                               Icons.phone,
@@ -453,6 +453,17 @@ Future<void> edit(BuildContext context, WidgetRef ref, int id) async {
                             controller: adressController,
                             icon: const Icon(
                               Icons.phone,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          _buildTravelTextField(
+                            label: 'سعر الإطعام',
+                            hint: 'سعر الإطعام',
+                            controller: adressController,
+                            icon: const Icon(
+                              Icons.food_bank,
                               color: Colors.blue,
                             ),
                           ),

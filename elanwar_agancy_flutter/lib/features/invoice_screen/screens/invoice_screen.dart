@@ -90,6 +90,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
     final price = reservations[widget.clientId]!.totalPrice.toString();
     final payed = reservations[widget.clientId]!.payed.toString();
     final debt = reservations[widget.clientId]!.debt.toString();
+    final phoneNumber = reservations[widget.clientId]!.phoneNumber.toString();
 
     final pdf = pw.Document();
     var arabicFont =
@@ -171,9 +172,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                             )),
                         pw.Text('الإسم: $clientName'),
                         pw.Text('مكان السكن: $adress'),
-                        pw.Text('إسم الفندق: $hotelName'),
-                        pw.Text('رقم الغرفة: $roomNumber'),
-                        pw.Text('رقم الحجز: $reservationID'),
+                        pw.Text('رقم الهاتف: $phoneNumber'),
                       ],
                     ),
                   ],
@@ -244,14 +243,10 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                       ),
                       pw.Row(
                         children: [
-                          pw.Text('دج $debt',
-                              style: pw.TextStyle(
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: PdfColors.red)),
+                          pw.Text('دج $debt'),
                           pw.Text('DEBT: ',
-                              style: pw.TextStyle(
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: PdfColors.red)),
+                              style:
+                                  pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                         ],
                       ),
                     ],
